@@ -1,0 +1,22 @@
+<div style="margin:50px 0px;">
+  <div style="width: 90%;padding: 50px;background-color: #e8fbf6;border-radius: 10px;" class="m-auto">
+      <div class="text-center">
+        <h2 class="text-primary">
+          All Blog Posts
+        </h2>
+        <p>
+          From here you can manage your Blog Posts
+        </p>
+      </div>
+      <div class="text-center my-1">
+        <button class="btn btn-secondary mr-2" routerLink="new">Add Post</button>
+        <button class="btn btn-primary mr-2" routerLink="images">Images</button>
+        <button class="btn btn-danger" routerLink="/dashboard">Back To Dashboard</button>
+      </div>
+  </div>
+<app-post-data-table [posts$] = "posts$"
+ (deletePostEvent)="deletePostAsync($event)"
+ (getPostsEvent)="getPostsAsync()"
+ (featurePostEvent)="featurePostAsync($event)"></app-post-data-table>
+
+</div>

@@ -1,0 +1,20 @@
+<div style="position: absolute;top: 0;" class="alert alert-dark mb-5">
+    <h2>
+        Exceptions Occured
+    </h2>
+    <ul>
+    <li>Message: <br> <code>{{state.message}}</code></li>
+    <li>Inner Exception: <code>{{state.innerException}}</code></li>
+    <li>Stack Trace: <br> <code>{{state.stackTrace}}</code></li>
+    <li>Data: <br> <code>{{state.data?.['HelpLink.BaseHelpUrl']}}
+    <br>{{state.data?.['HelpLink.EvtID']}}
+    <br>{{state.data?.['HelpLink.EvtSrc']}}
+    <br>{{state.data?.['HelpLink.LinkId']}}
+    <br>{{state.data?.['HelpLink.ProdName']}}
+    <br>{{state.data?.['HelpLink.ProdVer']}}
+</code>
+</li>
+    </ul>
+    <br>
+    <a routerLink="/{{state.fromComponent}}" class="btn btn-danger">Back to the last Page</a>
+</div>

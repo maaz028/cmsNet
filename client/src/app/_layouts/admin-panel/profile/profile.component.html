@@ -1,0 +1,85 @@
+<div style="margin:50px 0px;">
+
+<div style="margin:50px 0px;">
+  <div style="width: 60%;padding: 50px;background-color: #e8fbf6;border-radius: 10px;" class="m-auto">
+<form #emailForm="ngForm" class="row" (ngSubmit)="updateEmail(emailForm)">
+  <div class="col">
+      <input type="text" class="form-control input-round"
+      name="email"
+      #email="ngModel" ngModel
+      placeholder="Enter Email"
+      [ngModel]="currentEmail"
+      [required]="true"
+      [email]="true"
+      [ngClass]="{
+        'is-invalid': email.invalid && email.touched,
+        'is-valid' :  email.valid && email.touched}" >
+        <div *ngIf="email.invalid && email.touched" class="error mt-3">
+          <div *ngIf="email.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Email is required field.</div>
+          <div *ngIf="email.errors?.['email']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Email is invalid.</div>
+        </div>
+  </div>
+
+  <div class="col">
+      <button type="submit" class="btn btn-danger btn-round" [disabled]="emailForm.invalid">Update Email</button>
+  </div>
+</form>
+</div>
+<div style="margin:50px 0px;">
+  <div style="width: 60%;padding: 50px;background-color: #e8fbf6;border-radius: 10px;" class="m-auto">
+    <form  #passwordForm="ngForm" (ngSubmit)="updatePassword(passwordForm)">
+<div  class="row" >
+  <div class="col">
+      <input type="password"
+      name="password"
+      #password="ngModel"
+      ngModel class="form-control input-round"
+      placeholder="Password"
+      [required]="true"
+      [ngClass]="{
+        'is-invalid': password.invalid && password.touched,
+        'is-valid' :  password.valid && password.touched}"
+      >
+        <div *ngIf="password.invalid && password.touched" class="error mt-3">
+          <div *ngIf="password.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Password is required field.</div>
+        </div>
+  </div>
+  <div class="col">
+      <input type="password"
+      name="newPassword"
+      #newPassword="ngModel"
+      ngModel
+      class="form-control input-round"
+      placeholder="New Password"
+      [required]="true"
+      [minlength]="5"
+      [ngClass]="{
+        'is-invalid': newPassword.invalid && newPassword.touched,
+        'is-valid' :  newPassword.valid && newPassword.touched}">
+      <div *ngIf="newPassword.invalid && newPassword.touched" class="error mt-3">
+        <div *ngIf="newPassword.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">New Password is required field.</div>
+        <div *ngIf="newPassword.errors?.['minlength']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">New Password must be a minimum of 5 characters.</div>
+      </div>
+  </div>
+  <div class="col">
+      <input type="password"
+      name="confirmNewPassword"
+      #confirmNewPassword="ngModel"
+      ngModel class="form-control input-round"
+      placeholder="Confirm Password"
+      [required]="true"
+      [ngClass]="{
+        'is-invalid': confirmNewPassword.invalid && confirmNewPassword.touched,
+        'is-valid' :  confirmNewPassword.valid && confirmNewPassword.touched}">
+      <div *ngIf="confirmNewPassword.invalid && confirmNewPassword.touched" class="error mt-3">
+        <div *ngIf="confirmNewPassword.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Confirm Password is required field.</div>
+      </div>
+  </div>
+</div>
+<br>
+<div class="col">
+    <button type="submit" class="btn btn-danger btn-round"
+    [disabled]="passwordForm.invalid">Update Password</button>
+</div>
+</form>
+</div>

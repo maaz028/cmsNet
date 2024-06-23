@@ -1,0 +1,36 @@
+<div class="container">
+
+  <div class="card">
+    <h3 class="text-center" >Login</h3>
+    <br>
+      <form #form ="ngForm" class="row" (submit)="login(form)">
+          <input type="email" placeholder="Email" name="email" ngModel #email="ngModel"
+          required="true"
+          email="true"
+          [ngClass]="{
+            'is-invalid': email.invalid && email.touched,
+            'is-valid': email.valid && email.touched
+          }">
+           <div *ngIf="email.invalid && email.touched" class="error">
+            <div *ngIf="email.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">email is required field.</div>
+            <div *ngIf="email.errors?.['email']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Email is Invalid.</div>
+          </div>
+
+          <input type="password" placeholder="Password" #password="ngModel" ngModel name="password"
+          required="true"
+          [ngClass]="{
+            'is-invalid': password.invalid && password.touched,
+            'is-valid': password.valid && password.touched
+          }">
+          <div *ngIf="password.invalid && password.touched" class="error">
+            <div *ngIf="password.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Password is required field.</div>
+          </div>
+
+          <br>
+          <div class="buttons">
+              <button type="button" (click)="resetInputs(form)" class="btn btn-secondary">Reset</button>
+              <button type="submit" [disabled]="form.invalid" class="btn btn-danger">Login</button>
+          </div>
+      </form>
+  </div>
+</div>

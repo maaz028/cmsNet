@@ -1,0 +1,48 @@
+<div class="container" *ngIf="posts | async as posts; else loading" >
+  <br>
+    <div class="row justify-content-between" *ngIf="posts.length > 0; else noPosts">
+        <div class="col-md-12" >
+            <h5 class="font-weight-bold spanborder"><span>All Stories</span></h5>
+            <div class="mb-3 d-flex justify-content-between" *ngFor="let post of posts  | paginate
+            : {
+              itemsPerPage: tableSize,
+              currentPage: page,
+            };
+           ">
+                <div class="pr-3">
+                    <h2 class="mb-1 h4 font-weight-bold">
+                    <a class="text-dark" [routerLink]="['post', post.id]">{{post.title | titlecase}}</a>
+                    </h2>
+                    <p id="description">
+                      {{post.excerpt | slice: 0:200 |titlecase}}
+                    </p>
+                    <div class="card-text text-muted small">
+                         Maaz Khan in {{post.category.catName}}
+                    </div>
+                    <small class="text-muted">{{post.updatedAt | date}} &middot; 5 min read</small>
+                </div>
+                <img height="120" style="border-radius: 10px;" src="{{serverImageUrl}}{{post.postImgPath}}">
+            </div>
+        </div>
+        <br>
+        <div class="d-flex justify-content-center">
+          <pagination-controls class="pagination"
+            previousLabel="Prev"
+            nextLabel="Next"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+    </div>
+
+</div>
+
+<ng-template #loading>
+
+	<br>
+	<br>
+	<app-loading-spinner></app-loading-spinner>
+  </ng-template>
+<ng-template #noPosts>
+No Posts available at the moment
+</ng-template>

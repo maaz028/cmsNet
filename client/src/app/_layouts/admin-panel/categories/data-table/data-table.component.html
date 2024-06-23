@@ -1,0 +1,50 @@
+<div style="width: 60%;padding: 50px;background-color: #e8fbf6;border-radius: 10px;" class="m-auto">
+    <ng-container *ngIf="categories; else loading">
+      <ng-container *ngIf="categories.length > 0; else noCategories">
+        <table class="tbl box-shadow">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>ID</th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let category of categories | paginate
+            : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+              }; let i = index; trackBy: refereshCategories">
+              <th scope="row"> {{ i + 1}}</th>
+              <td>{{category.id}}</td>
+              <td>{{category.name | titlecase}}</td>
+              <td>
+                <button class="btn" (click)="populateCategoryEventEmitter(category.id)" data-bs-toggle="modal" data-bs-target="#updateCategoryModal"><i class="fa-solid fa-pen-to-square" style="color: #ffe100;"></i></button>
+                <button class="btn" (click)="deleteCategoryEventEmitter(category.id)"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        <div class="d-flex justify-content-center">
+          <pagination-controls class="pagination"
+            previousLabel="Prev"
+            nextLabel="Next"
+            (pageChange)="onTableDataChange($event)"
+          >
+          </pagination-controls>
+        </div>
+      </ng-container>
+      <ng-template #noCategories >
+        <div class="text-center">No Categories Available at the moment, Add Some.</div>
+      </ng-template>
+    </ng-container>
+    <ng-template #loading>
+      <br>
+      <br>
+      <app-loading-spinner></app-loading-spinner>
+    </ng-template>
+
+
+    </div>

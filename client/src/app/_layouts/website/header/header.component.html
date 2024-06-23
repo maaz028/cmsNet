@@ -1,0 +1,36 @@
+<nav class="topnav navbar navbar-expand-lg navbar-light bg-white fixed-top">
+  <div class="container">
+    <a class="navbar-brand" [routerLink]="['/home']"  ><img src="assets/logo_transparent.png" class="logo"></a>
+    <button (click)="handleMobileMenu(navbar)" id="hamButton"
+      class="navbar-toggler collapsed"
+      type="button"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon" #hamburger></span>
+    </button>
+    <div class="navbar-collapse collapse" id="navbar" #navbar>
+      <ul class="navbar-nav mr-auto d-flex align-items-center">
+
+        <li class="nav-item">
+          <a class="nav-link" (click)="hideNav(navbar)" onclick="window.scrollTo(0,0);" [routerLink]="['/home']" routerLinkActive="router-link-active">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="hideNav(navbar)" onclick="window.scrollTo(0,0)" [routerLink]="['/about']" routerLinkActive="router-link-active">About</a>
+        </li>
+      <ng-container *ngIf="categories$ | async as categories">
+       <ng-container *ngIf="categories.length > 0">
+        <li class="nav-item" *ngFor = "let category of categories">
+          <a class="nav-link" (click)="hideNav(navbar)" onclick="window.scrollTo(0,0)" [routerLink]="['/category',category.id]" routerLinkActive="router-link-active"
+            >{{category.name| titlecase}}</a
+          >
+        </li>
+       </ng-container>
+
+      </ng-container>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+

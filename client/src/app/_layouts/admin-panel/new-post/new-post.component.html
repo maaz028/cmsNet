@@ -1,0 +1,114 @@
+<div style="margin:50px 0px;" *ngIf="categories$ | async as categories; else loading">
+  <div style="width: 60%;padding: 50px;background-color: #e8fbf6;border-radius: 10px;" class="m-auto">
+      <div class="text-center">
+        <h2 class="text-primary">
+         <span *ngIf="isEditPost">Edit Post</span>
+         <span *ngIf="!isEditPost">Add New Post</span>
+        </h2>
+        <p>
+          You can <span *ngIf="isEditPost">edit your</span>
+          <span *ngIf="!isEditPost">add your new</span> post here
+        </p>
+      </div>
+      <form [formGroup]="formGroup" (ngSubmit)="onSubmitAsync()">
+        <div class="row form-group">
+            <div class="col box-shadow mr-2">
+
+              <div class="text-muted mt-3">Title</div>
+                <input type="text"
+                class="form-control"
+                [ngClass]="{
+                  'is-valid': fc.title.touched && fc.title.valid,
+                  'is-invalid': fc.title.touched && fc.title.invalid,
+                }" (keyup)="fillPermalink($event)"
+                formControlName="title">
+                <div *ngIf="fc.title.invalid && fc.title.touched" class="error">
+                  <div *ngIf="fc.title.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Title is required field.</div>
+                  <div *ngIf="fc.title.errors?.['minlength']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Title must be minimum of 10 characters.</div>
+                </div>
+
+              <div class="text-muted mt-3">Permalink</div>
+                <input type="text" class="form-control" [value] = 'permalink'   disabled>
+
+              <div class="text-muted mt-3">Excerpt</div>
+              <textarea class="form-control"
+              id="exampleFormControlTextarea1"
+              rows="6"
+              formControlName="excerpt"
+              [ngClass]="{
+                'is-valid': fc.excerpt.touched && fc.excerpt.valid,
+                'is-invalid': fc.excerpt.touched && fc.excerpt.invalid,
+              }"></textarea>
+              <div *ngIf="fc.excerpt.invalid && fc.excerpt.touched" class="error">
+                <div *ngIf="fc.excerpt.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Excerpt is required field.</div>
+                <div *ngIf="fc.excerpt.errors?.['minlength']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Excerpt must be minimum of 50 characters.</div>
+              </div>
+
+                <div class="text-muted mt-3"></div>
+            </div>
+            <div class="col box-shadow">
+              <div class="text-muted mt-3">Please select category</div>
+                <select
+                type="text"
+                class="form-select"
+                formControlName="category"
+                [ngClass]="{
+                  'is-valid': fc.category.valid && fc.category.touched,
+                  'is-invalid': fc.category.invalid && fc.category.touched,
+                }"
+                >
+                  <option value="">Select category</option>
+            <ng-container *ngIf="categories.length > 0">
+              <option
+              *ngFor="let category of categories"
+              [value]="category.id + '@' + category.name ">
+              {{ category.name | titlecase}}
+              </option>
+            </ng-container>
+
+                </select>
+                <div *ngIf="fc.category.invalid && fc.category.touched" class="error">
+                  <div *ngIf="fc.category.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Category is required field.</div>
+                </div>
+
+              <div class="text-muted mt-3">Post Image</div>
+                <img *ngIf="imgSrc" [src]="imgSrc" alt="" >
+                <input
+                type="file"
+                class="form-control"
+                accept="image/*"
+                (change)="showPreview($event)"
+                >
+                <button class="btn btn-primary mt-2 mr-2" type="button" (click)="uploadToServer()" [disabled]="isPhotoUploaded">{{ uploadButtonText }}</button>
+
+
+                <div class="text-muted mt-3"></div>
+            </div>
+        </div>
+        <div class="row box-shadow bg-white">
+          <div class="text-muted mt-3">Content</div>
+          <angular-editor placeholder="Add your content Here" [config]="editorConfig" formControlName="content">
+          </angular-editor>
+          <div *ngIf="fc.content.invalid && fc.content.touched" class="error">
+            <div *ngIf="fc.content.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Content is required field.</div>
+            <div *ngIf="fc.content.errors?.['minlength']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Content must be minimum of 100 characters.</div>
+          </div>
+
+        </div>
+        <div class="text-center my-3">
+          <button class="btn btn-secondary mr-2" type="submit" [disabled]="formGroup.invalid || !isPhotoUploaded">
+            <span *ngIf="isEditPost">Update</span>
+            <span *ngIf="!isEditPost">Add</span>
+          </button>
+
+          <button class="btn btn-danger" routerLink="/dashboard/manage-posts">Manage Posts</button>
+        </div>
+      </form>
+  </div>
+
+</div>
+<ng-template #loading>
+  <br>
+  <br>
+  <app-loading-spinner></app-loading-spinner>
+</ng-template>

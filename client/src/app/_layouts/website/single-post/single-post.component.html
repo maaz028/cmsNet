@@ -1,0 +1,86 @@
+<ng-container *ngIf="postDetailsData$ | async as postDetailsData; else loading">
+	<div class="container" >
+		<div class="jumbotron jumbotron-fluid mb-3 pl-0 pt-0 pb-0 bg-white position-relative">
+			<div class="h-100 tofront">
+				<div class="row justify-content-between" >
+					<div class="col-md-6 pt-6 pb-6 pr-6 align-self-center">
+						<p class="text-uppercase">
+							Back to
+							<a class="text-danger" style="cursor: pointer;" routerLink="/">Home</a>
+						</p>
+						<p class="text-uppercase font-weight-bold">
+							<a class="text-danger" >{{postDetailsData.postDetails.category.catName}}</a>
+						</p>
+						<h1 class="display-4 secondfont mb-3 font-weight-bold">{{postDetailsData.postDetails.title}}</h1>
+						<div class="d-flex align-items-center">
+							<img class="rounded-circle" src="https://png.pngtree.com/background/20230528/original/pngtree-an-animated-face-of-a-boy-with-headphones-picture-image_2781319.jpg" width="70">
+							<small class="ml-2">Maaz Khan <span class="text-muted d-block">{{postDetailsData.postDetails.updatedAt | date
+							}}</span>
+							</small>
+						</div>
+					</div>
+					<div class="col-md-6 pr-0">
+						<img src="{{postImageUrl}}{{postDetailsData.postDetails.postImgPath}}">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End Header -->
+
+	<!--------------------------------------
+	MAIN
+	--------------------------------------->
+	<div class="container pt-4 pb-4">
+		<div class="row justify-content-center">
+			<div class="col-md-12 col-lg-12">
+				<article style="text-align: justify;word-wrap: break-word;" class="article-post" [innerHTML]="postDetailsData.postDetails.content">
+
+				</article>
+			</div>
+		</div>
+	</div>
+
+
+<div class="container pt-4 pb-4">
+  <ng-container *ngIf="postDetailsData.nextPosts.length > 0">
+    <h5 class="font-weight-bold spanborder"><span>Read next</span></h5>
+    <div class="row">
+        <div class="flex-md-row mb-4 box-shadow h-xl-300">
+          <div class="mb-3 d-flex align-items-center " *ngFor="let post of postDetailsData.nextPosts | paginate
+          : {
+            itemsPerPage: tableSize,
+            currentPage: page,
+            };">
+            <img style="border-radius: 10px" height="80" src="{{serverImageUrl}}{{post.postImgPath}}">
+            <div class="pl-3">
+              <h2 class="mb-2 h6 font-weight-bold">
+              <a class="text-dark" onclick="window.scrollTo(0,0)" [routerLink]="['/category/' + post.category.catID + '/post/' + post.id]">{{post.title | titlecase}}</a>
+              </h2>
+              <div class="card-text text-muted small">
+                 Maaz Khan in {{post.category.catName| titlecase}}
+              </div>
+              <small class="text-muted">{{post.updatedAt | date}}</small>
+            </div>
+          </div>
+
+      </div>
+    </div>
+    <div class="d-flex justify-content-center">
+      <pagination-controls class="pagination"
+        previousLabel="Prev"
+        nextLabel="Next"
+        (pageChange)="onTableDataChange($event)"
+      >
+      </pagination-controls>
+      </div>
+  </ng-container>
+</div>
+
+</ng-container>
+<ng-template #loading>
+
+	<br>
+	<br>
+	<app-loading-spinner></app-loading-spinner>
+  </ng-template>

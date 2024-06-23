@@ -1,0 +1,13 @@
+
+
+.wrapper{margin:5%;}
+
+.panel-heading {
+  border: 1px solid gray;
+  border-radius: 4px;
+  padding: 0px 10px;
+  background: #0e6ac7;
+  font-size: 18px;
+  color: white;
+  text-shadow: 1px 1px 1px black;
+}

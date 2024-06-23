@@ -1,0 +1,15 @@
+.pagination ::ng-deep .ngx-pagination .current {
+    background: red;
+  }
+  .pagination ::ng-deep .ngx-pagination {
+    padding-left: 0px !important;
+  }
+  
+  .pagination ::ng-deep .ngx-pagination{
+    background: #f3f3f3 !important;
+    border: transparent !important;
+    border-radius: 5px !important;
+    box-shadow: 2px 1px 2px grey;
+  
+  }
+  

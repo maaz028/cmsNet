@@ -1,0 +1,12 @@
+npm install ngx-pagination --save
+https://github.com/michaelbromley/ngx-pagination/blob/master/README.md
+
+npm install @kolkov/angular-editor --save
+https://www.npmjs.com/package/@kolkov/angular-editor
+
+npm install ngx-toastr --save
+npm install @angular/animations --save
+
+npm install ngx-spinner --save
+
+npm install sweetalert2

@@ -1,0 +1,150 @@
+
+<ng-container *ngIf="postsData$ | async as postsData; else loading">
+
+  <ng-container *ngIf="postsData.posts.length > 0; else noPosts">
+      <ng-container *ngIf="postsData.featuredPosts.length > 0; else noFeaturedPosts ">
+          <div class="container" >
+            <div
+              class="jumbotron jumbotron-fluid mb-3 pt-0 pb-0 bg-lightblue position-relative"
+            >
+              <div class="pl-4 pr-0 h-100 tofront" >
+              <div class="row justify-content-between">
+                <div class="col-md-6 pt-6 pb-6 align-self-center">
+                <h1 class=" mb-3 font-weight-bold">
+                  {{postsData.featuredPosts[0].title | titlecase}}
+                </h1>
+                <p class="mb-3">
+                  {{postsData.featuredPosts[0].excerpt | titlecase }}
+                </p>
+                <a [routerLink]="['/category/' + postsData.featuredPosts[0].category.catID + '/post', postsData.featuredPosts[0].id ]" class="btn btn-dark">Read More</a>
+                </div>
+                <div
+                class="col-md-6 d-none d-md-block pr-0"
+                >
+                <img style="background-size: cover;height: 100%;" src="{{serverImageUrl}}{{postsData.featuredPosts[0].postImgPath}}" alt="">
+              </div>
+              </div>
+              </div>
+            </div>
+            </div>
+
+            <div class="container pt-4 pb-4" >
+              <div class="row" *ngIf="postsData.featuredPosts[1]">
+                <div class="col-lg-6" >
+                  <div class="card border-0 mb-4 box-shadow h-xl-300">
+                    <div style=" height: 150px;        background-repeat: no-repeat;">
+                    <img style="height: 150px;width:100%;background-size: cover;border-radius: 10px;" src="{{serverImageUrl}}{{postsData.featuredPosts[1].postImgPath}}" alt=""></div>
+                    <div class="card-body px-0 pb-0 d-flex flex-column align-items-start">
+                      <h2 class="h4 font-weight-bold">
+                      <a class="text-dark" [routerLink]="['/category/' + postsData.featuredPosts[1].category.catID + '/post', postsData.featuredPosts[1].id ]">{{postsData.featuredPosts[1].title | titlecase}}</a>
+                      </h2>
+                      <p class="card-text">
+                      {{postsData.featuredPosts[1].excerpt | titlecase | slice: 0: 60}}...
+                      </p>
+                      <div>
+                        <small class="d-block"><a class="text-muted" href="./author.html">Maaz Khan</a></small>
+                        <small class="text-muted">{{postsData.featuredPosts[1].createdAt | date }}</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6" >
+                  <div class="flex-md-row mb-4 box-shadow h-xl-300">
+                    <ng-container  *ngFor="let fPost of postsData.featuredPosts;let i = index;">
+                    <div class="mb-3 d-flex align-items-center"  *ngIf="i > 1">
+
+                        <img height="100" style="border-radius: 10px" width="200" src="{{serverImageUrl}}{{fPost.postImgPath}}">
+                      <div class="pl-3">
+                        <h2 class="mb-2 h6 font-weight-bold">
+                        <a class="text-dark" [routerLink]="['/category/' + fPost.category.catID + '/post', fPost.id ]">{{fPost.title | titlecase}}</a>
+                        </h2>
+                        <div class="card-text text-muted small">
+                           Maaz Khan in {{fPost.category.catName | titlecase}}
+                        </div>
+                        <small class="text-muted">{{fPost.createdAt | date}}</small>
+                      </div>
+                    </div>
+                  </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noFeaturedPosts>
+
+            <br>
+            <br>
+            <div class="text-center">
+              No featured Posts available.
+            </div>
+            </ng-template>
+
+        <div class="container">
+          <div class="row justify-content-between">
+            <div class="col-md-8" >
+              <h5 class="font-weight-bold spanborder"><span>All Stories</span></h5>
+              <div class="mb-3 d-flex justify-content-between" *ngFor="let post of postsData.posts | paginate
+              : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+              };">
+                <div class="pr-3">
+                  <h2 class="mb-1 h4 font-weight-bold">
+                  <a class="text-dark" [routerLink]="['/category/' + post.category.catID + '/post', post.id ]">{{post.title | titlecase}}</a>
+                  </h2>
+                  <p id="description">
+                  {{post.excerpt | slice: 0:100 |titlecase}}
+                  </p>
+                  <div class="card-text text-muted small">
+                     Maaz Khan in {{post.category.catName | titlecase}}
+                  </div>
+                  <small class="text-muted">Dec 12 &middot; 5 min read</small>
+                </div>
+                <img height="120" style="border-radius: 10px" src="{{serverImageUrl}}{{post.postImgPath}}">
+              </div>
+            </div>
+            <br>
+
+            <div class="col-md-4 pl-4">
+              <h5 class="font-weight-bold spanborder"><span>Popular</span></h5>
+              <ol class="list-featured">
+                <li *ngFor="let fPost of postsData.featuredPosts;let i = index;">
+                <span >
+                <h6 class="font-weight-bold">
+                <a [routerLink]="['/category/' + fPost.category.catID + '/post', fPost.id ]" class="text-dark">{{fPost.title | titlecase}}</a>
+                </h6>
+                <p class="text-muted">
+                  Maaz Khan in {{fPost.category.catName | titlecase}}
+                </p>
+                </span>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center">
+            <pagination-controls class="pagination"
+              previousLabel="Prev"
+              nextLabel="Next"
+              (pageChange)="onTableDataChange($event)"
+            >
+            </pagination-controls>
+          </div>
+
+      </ng-container>
+  </ng-container>
+  <ng-template #noPosts>
+    <br>
+    <br>
+    <div class="text-center">
+      No Posts available.
+    </div>
+  </ng-template>
+
+<ng-template #loading>
+
+	<br>
+	<br>
+	<app-loading-spinner></app-loading-spinner>
+  </ng-template>
+

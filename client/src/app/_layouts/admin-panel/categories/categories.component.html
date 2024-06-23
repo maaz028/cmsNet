@@ -1,0 +1,75 @@
+<div style="margin:50px 0px;">
+  <div style="width: 60%;padding: 50px;background-color: #e8fbf6;border-radius: 10px;" class="m-auto">
+      <div class="text-center">
+        <h2 class="text-primary">
+          New Categories
+        </h2>
+        <p>
+          You can add new categories from here ...!
+        </p>
+      </div>
+      <br>
+      <form #form ="ngForm" class="row">
+        <div class="col-md-9">
+          <input type="text" class="form-control" [ngClass]=" {
+            'is-invalid': category.invalid && category.touched,
+            'is-valid': category.valid && category.touched
+          }" placeholder="Add New Categories" ngModel name="category" #category="ngModel"
+          required
+          maxlength="20">
+          <div *ngIf="category.invalid && category.touched" class="error">
+            <div *ngIf="category.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Category is required field.</div>
+            <div *ngIf="category.errors?.['maxLength']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Category name cannot exceeds 20 characters.</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-primary shadow-md " [disabled]="form.invalid" (click)="addCategoryAsync(form)">Add Category</button>
+        </div>
+      </form>
+  </div>
+  <br>
+<app-data-table [categories] = "categories" (populateCategoryEvent) = "populateCategory($event)" (deleteCategoryEvent) = "deleteCategoryAsync($event)" (callCategoriesEvent)="getCategoriesAsync()"></app-data-table>
+  <div class="text-center my-3">
+    <button class="btn btn-danger" routerLink="/dashboard">Back To Dashboard</button>
+  </div>
+</div>
+
+<!-- modal -->
+<div  class="modal fade" id="updateCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Category Details</h1>
+        <button type="button" #closeBtn class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="formGroup" (ngSubmit)="updateCategoryAsync()">
+      <div class="modal-body">
+          <input type="text" class="form-control"
+           formControlName="IDDisabled">
+          <input type="text"
+           hidden
+            formControlName="ID">
+          <br>
+          <input
+          type="text"
+          class="form-control"
+          [ngClass]=" {
+            'is-invalid': categoryFC.name.invalid && categoryFC.name.touched,
+            'is-valid': categoryFC.name.valid && categoryFC.name.touched
+          }"
+          formControlName="name">
+          <div *ngIf="categoryFC.name.invalid && categoryFC.name.touched" class="error">
+            <div *ngIf="categoryFC.name.errors?.['required']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Category is required field.</div>
+            <div *ngIf="categoryFC.name.errors?.['maxlength']" style="background-color: rgb(211, 80, 80);padding: 5px;border-radius: 4px;color: white;">Category name cannot exceeds 20 characters.</div>
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" [disabled]="formGroup.invalid" >Update</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+

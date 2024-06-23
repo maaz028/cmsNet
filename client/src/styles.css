@@ -1,0 +1,78 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~ngx-toastr/toastr";
+
+.navbar {
+  box-shadow: 0 0px 6px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.nav-item {
+  margin: 0px 10px;
+}
+
+.router-link-active {
+  background-color: #636363;
+  color: white !important;
+  padding: 10px !important;
+}
+
+.logo {
+  width: 177px;
+}
+
+.font-65px {
+  font-size: 65px;
+}
+
+.dash-item {
+  cursor: pointer;
+}
+
+.error {
+  margin-top: 3px;
+}
+
+.box-shadow {
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+
+}
+
+.is-valid{
+  border-color: green !important;
+  border-width: 2px !important;
+  color: green !important;
+}
+.is-invalid{
+  border-width: 2px !important;
+  color: red !important;
+}
+
+.tbl{
+  width: 100%;
+  text-align: center;
+  background: white;
+  padding: 0px;
+  border-radius: 6px;
+  border-collapse: collapse;
+}
+
+.tbl td, .tbl th{
+  border: 0.5px solid #dddddd;
+}
+
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px !important;
+  }
+  .nav-item :hover {
+    background: #8e8e8e !important;
+    border-radius: 5px;
+    padding: 10px;
+    .nav-link {
+      color: #838383 !important;
+      padding: 10px !important;
+    }
+  }
+}
+

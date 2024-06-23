@@ -1,0 +1,40 @@
+<nav class="topnav navbar navbar-expand-lg navbar-light bg-white fixed-top">
+  <div class="container">
+    <a class="navbar-brand" [routerLink]="['/home']"  ><img src="assets/logo_transparent.png" class="logo"></a>
+
+    <button (click)="handleMobileMenu(navbar)"
+      class="navbar-toggler collapsed"
+      type="button"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse" id="navbarColor02" #navbar>
+      <ul class="navbar-nav mr-auto d-flex align-items-center">
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="categories" routerLinkActive="router-link-active">Manage Categories</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="manage-posts" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="router-link-active">Manage Posts</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="manage-posts/new" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="router-link-active">Add Post</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="settings" routerLinkActive="router-link-active">Settings</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav mr-auto d-flex align-items-end">
+        <li>
+          <button class="btn btn-danger" (click)="signOut()">Sign out</button>
+        </li>
+        <li class="mx-4">
+          <h5 class="text-decoration-underline text-primary-emphasis">{{email | titlecase}}</h5>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</nav>
