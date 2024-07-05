@@ -17,13 +17,13 @@ export class DataTableComponent implements OnInit {
   @Output() callCategoriesEvent = new EventEmitter()
 
   constructor(
-    private _category: CategoryService
+    private category: CategoryService
   ) { }
   page: number = 1;
   tableSize: number = 10;
 
   ngOnInit() {
-    this._category.refreshRequired$
+    this.category.refreshRequired$
       .subscribe(() => {
         this.callCategoriesEvent.emit(null);
       })

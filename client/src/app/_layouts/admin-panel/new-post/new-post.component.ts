@@ -3,7 +3,6 @@ import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { FormBuilder, Validators } from '@angular/forms';
 import { CategoryService } from 'src/app/services/category.service';
 import { lastValueFrom } from 'rxjs';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { Post } from 'src/app/models/post.model';
 import { ToastrService } from 'ngx-toastr';
 import { PostService } from 'src/app/services/post.service';
@@ -56,12 +55,11 @@ export class NewPostComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private _category: CategoryService,
-    private spinner: NgxSpinnerService,
+    private category: CategoryService,
     private toastr: ToastrService,
-    private _post: PostService,
-    private _activatedRoute: ActivatedRoute,
-    private _router: Router
+    private post: PostService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {
     this.formGroup = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(10)]],
@@ -70,7 +68,7 @@ export class NewPostComponent implements OnInit {
       content: ['', [Validators.required, Validators.minLength(100)]],
     });
 
-    this._activatedRoute.params.subscribe((res) => {
+    this.activatedRoute.params.subscribe((res) => {
       this.postId = res?.['id'];
     });
   }
@@ -80,7 +78,7 @@ export class NewPostComponent implements OnInit {
   permalink: string = '';
   imgSrc: string = '';
   formGroup?: any;
-  categories$ = this._category.getCategories();
+  categories$ = this.category.getCategories();
   isEditPost: boolean = false;
 
   private postDetails!: Post;
@@ -88,15 +86,12 @@ export class NewPostComponent implements OnInit {
   private imagePath!: string;
 
   async ngOnInit() {
-    this.spinner.show();
-
     if (this.postId) {
       this.isEditPost = true;
       await this.getPostDetailsAsync();
       this.populatePost(this.postDetails);
     }
 
-    this.spinner.hide();
   }
 
   private populatePost(post: Post): void {
@@ -108,13 +103,13 @@ export class NewPostComponent implements OnInit {
     });
 
     this.permalink = post.permalink;
-    this.imgSrc = this._post.serverImageUrl + post.postImgPath;
+    this.imgSrc = this.post.serverImageUrl + post.postImgPath;
     this.imagePath = post.postImgPath;
     this.isPhotoUploaded = true;
   }
 
   private async getPostDetailsAsync(): Promise<void> {
-    const postDetails$ = this._post.singlePost(this.postId);
+    const postDetails$ = this.post.singlePost(this.postId);
 
     await lastValueFrom(postDetails$)
       .then((res) => {
@@ -160,8 +155,7 @@ export class NewPostComponent implements OnInit {
       postImageFormData.append('size', this.selectedFile.size.toString());
       postImageFormData.append('type', this.selectedFile.type);
 
-      this.spinner.show();
-      const postImageUpload$ = this._post.uploadPostImage(postImageFormData);
+      const postImageUpload$ = this.post.uploadPostImage(postImageFormData);
 
       await lastValueFrom(postImageUpload$)
         .then((res) => {
@@ -172,7 +166,6 @@ export class NewPostComponent implements OnInit {
         })
         .catch(() => this.toastr.error('Internal Server Error...'));
 
-      this.spinner.hide();
     } else this.toastr.warning('Select Image !...');
   }
 
@@ -192,10 +185,8 @@ export class NewPostComponent implements OnInit {
       content: this.formGroup.value.content,
     };
 
-    this.spinner.show();
-
     if (!this.postId) {
-      const post$ = this._post.addPost(postData);
+      const post$ = this.post.addPost(postData);
 
       await lastValueFrom(post$)
         .then((res) => {
@@ -203,7 +194,7 @@ export class NewPostComponent implements OnInit {
             this.toastr.error(res?.message);
           } else {
             this.toastr.success('Post created successfully !');
-            this._router.navigate(['/dashboard/manage-posts']);
+            this.router.navigate(['/dashboard/manage-posts']);
           }
 
           this.formGroup.reset();
@@ -212,7 +203,7 @@ export class NewPostComponent implements OnInit {
         })
         .catch(() => console.error('Internal Server Error...'));
     } else {
-      const postEdit$ = this._post.updatePost(postData);
+      const postEdit$ = this.post.updatePost(postData);
 
       await lastValueFrom(postEdit$)
         .then((res) => {
@@ -220,14 +211,13 @@ export class NewPostComponent implements OnInit {
             this.toastr.error(res?.message);
           } else {
             this.toastr.success('Post updated successfully !');
-            this._router.navigate(['/dashboard/manage-posts']);
+            this.router.navigate(['/dashboard/manage-posts']);
           }
 
-          this._router.navigate(['/dashboard/manage-posts']);
+          this.router.navigate(['/dashboard/manage-posts']);
         })
         .catch(() => this.toastr.error('Internal Server Error...'));
     }
 
-    this.spinner.hide();
   }
 }

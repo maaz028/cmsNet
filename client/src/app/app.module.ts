@@ -17,6 +17,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { SharedModule } from './shared.module';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
+import { LoadingInterceptor } from './interceptors/loading.interceptor';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,11 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
       multi: true,
     },
   ],

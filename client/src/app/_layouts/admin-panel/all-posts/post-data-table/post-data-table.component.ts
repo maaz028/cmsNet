@@ -16,7 +16,7 @@ export class PostDataTableComponent implements OnInit {
   @Output() featurePostEvent = new EventEmitter<string>();
   @Output() getPostsEvent = new EventEmitter();
 
-  constructor(private _post: PostService) {}
+  constructor(private post: PostService) {}
 
   postImageUrl!: string;
   page: number = 1;
@@ -30,8 +30,8 @@ export class PostDataTableComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._post.refreshRequired$.subscribe(() => this.getPostsEvent.emit());
-    this.postImageUrl = this._post.serverImageUrl;
+    this.post.refreshRequired$.subscribe(() => this.getPostsEvent.emit());
+    this.postImageUrl = this.post.serverImageUrl;
   }
 
   deletePostEventEmitter<T extends string | undefined>(id: T) {

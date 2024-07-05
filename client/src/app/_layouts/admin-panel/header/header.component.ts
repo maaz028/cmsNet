@@ -11,10 +11,10 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 export class HeaderComponent implements OnInit {
   email!: string;
 
-  constructor(private _auth: AuthenticationService, private _router: Router) {}
+  constructor(private auth: AuthenticationService, private router: Router) {}
 
   ngOnInit(): void {
-    this.email = this._auth.getAccountDetails().email;
+    this.email = this.auth.getAccountDetails().email;
   }
 
   handleMobileMenu(element: HTMLDivElement): void {
@@ -23,7 +23,7 @@ export class HeaderComponent implements OnInit {
   }
 
   signOut() {
-    this._auth.clearCookies();
-    this._router.navigateByUrl('/login');
+    this.auth.clearCookies();
+    this.router.navigateByUrl('/login');
   }
 }

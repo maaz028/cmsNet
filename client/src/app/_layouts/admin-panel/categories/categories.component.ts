@@ -6,7 +6,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, NgForm, Validators } from '@angular/forms';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, delay, lastValueFrom, map, takeUntil } from 'rxjs';
 import { Category } from 'src/app/models/category.model';
@@ -25,13 +24,12 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   formGroup: any;
 
   constructor(
-    private _category: CategoryService,
+    private category: CategoryService,
     private toastr: ToastrService,
-    private _spinner: NgxSpinnerService,
-    private _formBuilder: FormBuilder,
-    private _post: PostService
+    private formBuilder: FormBuilder,
+    private post: PostService
   ) {
-    this.formGroup = this._formBuilder.group({
+    this.formGroup = this.formBuilder.group({
       IDDisabled: [
         {
           value: '',
@@ -57,7 +55,7 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   }
 
   async getCategoriesAsync() {
-    const categories = this._category.getCategories();
+    const categories = this.category.getCategories();
 
     await lastValueFrom(categories).then((res) => {
       if (res.length > 0) {
@@ -69,11 +67,10 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   }
 
   async addCategoryAsync(form: NgForm): Promise<void> {
-    const categoryAdded$ = this._category.addCategory({
+    const categoryAdded$ = this.category.addCategory({
       name: form.value.category,
     });
 
-    this._spinner.show();
     await lastValueFrom(categoryAdded$)
       .then((res) => {
         if (res?.available) {
@@ -81,12 +78,10 @@ export class CategoriesComponent implements OnInit, OnDestroy {
         } else this.toastr.success('Data inserted Successfully!');
       })
       .catch(() => {
-        this._spinner.hide();
-        throw new Error('Server error occurred.');
+        console.error('Server error occurred.');
       });
 
     form.reset();
-    this._spinner.hide();
   }
 
   deleteCategoryAsync(id: string): void {
@@ -100,9 +95,7 @@ export class CategoriesComponent implements OnInit, OnDestroy {
       confirmButtonText: 'Yes, delete it!',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        this._spinner.show();
-
-        const isCategoryUsed$ = this._post
+        const isCategoryUsed$ = this.post
           .allPosts()
           .pipe(
             map((posts) =>
@@ -114,9 +107,8 @@ export class CategoriesComponent implements OnInit, OnDestroy {
         await lastValueFrom(isCategoryUsed$).then((res) => {
           if (res.length > 0) {
             this.toastr.warning('Category is being used!');
-            this._spinner.hide();
           } else {
-            this._category
+            this.category
               .deleteCategory(id)
               .pipe(takeUntil(this.onDestroy))
               .subscribe({
@@ -125,7 +117,6 @@ export class CategoriesComponent implements OnInit, OnDestroy {
                     `Data having ID: ${id} deleted Successfully!`
                   );
 
-                  this._spinner.hide();
                 },
                 error: () => {
                   this.toastr.error('Internal Server Error ocurred.');
@@ -150,14 +141,12 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   }
 
   async updateCategoryAsync(): Promise<void> {
-    this._spinner.show();
-
     const category: Category = {
       id: this.formGroup.value.ID,
       name: this.formGroup.value.name,
     };
 
-    const category$ = this._category.updateCategory(category);
+    const category$ = this.category.updateCategory(category);
 
     await lastValueFrom(category$)
       .then((res: any) => {
@@ -173,7 +162,6 @@ export class CategoriesComponent implements OnInit, OnDestroy {
       })
       .catch(() => this.toastr.error('Internal Server Error...'));
 
-    this._spinner.hide();
   }
 
   ngOnDestroy(): void {

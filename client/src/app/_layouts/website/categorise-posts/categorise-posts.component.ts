@@ -16,18 +16,18 @@ import { PostService } from 'src/app/services/post.service';
 })
 export class CategorisePostsComponent implements OnInit {
   constructor(
-    private _post: PostService,
-    private _activatedRoute: ActivatedRoute
+    private post: PostService,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   page: number = 1;
   tableSize: number = 4;
-  serverImageUrl = this._post.serverImageUrl;
+  serverImageUrl = this.post.serverImageUrl;
   posts!: Observable<Post[]>;
 
   ngOnInit(): void {
-    this._activatedRoute.params.subscribe(async (val) => {
-     this.posts =  this._post
+    this.activatedRoute.params.subscribe(async (val) => {
+     this.posts =  this.post
         .allPosts()
         .pipe(
           map((posts) =>

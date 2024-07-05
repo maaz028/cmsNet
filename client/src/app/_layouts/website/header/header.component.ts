@@ -16,9 +16,9 @@ export class HeaderComponent {
   @ViewChild('navbar') navbar!: ElementRef<any>;
   @ViewChild('hamburger') hamburger!: ElementRef<any>;
 
-  constructor(private _category: CategoryService) {}
+  constructor(private category: CategoryService) {}
 
-  categories$ = this._category.getCategories();
+  categories$ = this.category.getCategories();
 
   handleMobileMenu(element: HTMLDivElement): void {
     if (element.className.includes('show')) element.classList.remove('show');

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { lastValueFrom } from 'rxjs';
 import { AuthenticationService } from 'src/app/services/authentication.service';
@@ -13,45 +12,44 @@ import { AuthenticationService } from 'src/app/services/authentication.service';
 })
 export class ProfileComponent implements OnInit {
   constructor(
-    private _toastr: ToastrService,
-    private _auth: AuthenticationService,
-    private _spinner: NgxSpinnerService,
-    private _router: Router
+    private toastr: ToastrService,
+    private auth: AuthenticationService,
+    private router: Router
   ) {}
 
   currentEmail!: string;
 
   ngOnInit(): void {
-    this.currentEmail = this._auth.getAccountDetails().email;
+    this.currentEmail = this.auth.getAccountDetails().email;
   }
 
   async updateEmail(form: NgForm) {
     if (form.value.email !== this.currentEmail) {
-      const updateEmail$ = this._auth.updateEmail(
-        this._auth.getAccountDetails().id,
+      const updateEmail$ = this.auth.updateEmail(
+        this.auth.getAccountDetails().id,
         form.value.email
       );
 
       await lastValueFrom(updateEmail$)
         .then((res) => {
           if (res) {
-            this._toastr.success('Email Updated, Please Login again.');
-            this._auth.clearCookies();
-            this._router.navigateByUrl('/login');
+            this.toastr.success('Email Updated, Please Login again.');
+            this.auth.clearCookies();
+            this.router.navigateByUrl('/login');
           }
         })
         .catch(() => {
           console.error('Server error ocurred.');
         });
     } else {
-      this._toastr.warning('New email cannot be current email');
+      this.toastr.warning('New email cannot be current email');
     }
   }
 
   async updatePassword(form: NgForm) {
     if (form.value.newPassword === form.value.confirmNewPassword) {
-      const updatePassword$ = this._auth.updatePassword(
-        this._auth.getAccountDetails().id,
+      const updatePassword$ = this.auth.updatePassword(
+        this.auth.getAccountDetails().id,
         form.value.password,
         form.value.newPassword
       );
@@ -59,11 +57,11 @@ export class ProfileComponent implements OnInit {
       await lastValueFrom(updatePassword$)
         .then((res: any) => {
           if (res.isPasswordUpdated) {
-            this._toastr.success('Passwored updated, Please login again.');
-            this._auth.clearCookies();
-            this._router.navigateByUrl('/login');
+            this.toastr.success('Passwored updated, Please login again.');
+            this.auth.clearCookies();
+            this.router.navigateByUrl('/login');
           } else {
-            this._toastr.error('Current Passwored is invalid.');
+            this.toastr.error('Current Passwored is invalid.');
           }
         })
         .catch(() => {
@@ -71,7 +69,7 @@ export class ProfileComponent implements OnInit {
         });
       form.reset();
     } else {
-      this._toastr.error('Password do not match.');
+      this.toastr.error('Password do not match.');
     }
   }
 }

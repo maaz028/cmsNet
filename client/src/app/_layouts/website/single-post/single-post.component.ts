@@ -15,16 +15,16 @@ import { PostService } from 'src/app/services/post.service';
 })
 export class SinglePostComponent implements OnInit {
   constructor(
-    private _activatedRoute: ActivatedRoute,
-    private _post: PostService,
-    private _route: Router
+    private activatedRoute: ActivatedRoute,
+    private post: PostService,
+    private route: Router
   ) {}
 
-  serverImageUrl = this._post.serverImageUrl;
-  categoryId = this._route.url.split('/')[2];
+  serverImageUrl = this.post.serverImageUrl;
+  categoryId = this.route.url.split('/')[2];
   page: number = 1;
   tableSize: number = 3;
-  postImageUrl = this._post.serverImageUrl;
+  postImageUrl = this.post.serverImageUrl;
 
   postDetailsData$!: Observable<PostsDetailsData>;
 
@@ -33,10 +33,10 @@ export class SinglePostComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this._activatedRoute.params.subscribe((res) => {
-      const postDetails$ = this._post.singlePost(res['id'] ? res['id'] : '');
+    this.activatedRoute.params.subscribe((res) => {
+      const postDetails$ = this.post.singlePost(res['id'] ? res['id'] : '');
 
-      const nextPosts$ = this._post
+      const nextPosts$ = this.post
         .getPostsByCategory(this.categoryId)
         .pipe(
           map((posts) =>

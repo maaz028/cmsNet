@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, Subject, catchError, delay, map, of, tap } from 'rxjs';
+import { Observable, Subject, map, of, tap } from 'rxjs';
 
 import { cmsEnv } from 'src/environments/environment.development';
 import { PhotoImage, Post } from '../models/post.model';
@@ -14,6 +14,7 @@ export class PostService {
   constructor(private http: HttpClient) {}
 
   posts: Post[] = [];
+  postsByCategory: Post[] = [];
   useCache = true;
 
   private _refreshRequired$ = new Subject<void>();
@@ -30,8 +31,9 @@ export class PostService {
   }
 
   addPost(postData: Post): Observable<Post> {
-    return this.http.post<Post>(`${cmsEnv.baseUrl}/Post/AddPost`, postData)
-    .pipe(tap(() => this.useCache = false));
+    return this.http
+      .post<Post>(`${cmsEnv.baseUrl}/Post/AddPost`, postData)
+      .pipe(tap(() => (this.useCache = false)));
   }
 
   allPosts(): Observable<Post[]> {
@@ -44,10 +46,7 @@ export class PostService {
 
     return this.http
       .get<Post[]>(`${cmsEnv.baseUrl}/Post/GetAllPosts`)
-      .pipe(
-        delay(2000),
-        map((posts) => (this.posts = posts))
-      )
+      .pipe(map((posts) => (this.posts = posts)))
       .pipe(tap(() => (this.useCache = true)));
   }
 
@@ -72,16 +71,15 @@ export class PostService {
       return of(post);
     }
 
-    return this.http
-      .get<Post>(`${cmsEnv.baseUrl}/Post/GetPost`, {
-        params: new HttpParams().set('id', id),
-      })
-      .pipe(delay(2000));
+    return this.http.get<Post>(`${cmsEnv.baseUrl}/Post/GetPost`, {
+      params: new HttpParams().set('id', id),
+    });
   }
 
   updatePost(post: Post): Observable<Post> {
-    return this.http.patch<Post>(`${cmsEnv.baseUrl}/Post/UpdatePost`, post)
-    .pipe(tap(() => this.useCache = false));
+    return this.http
+      .patch<Post>(`${cmsEnv.baseUrl}/Post/UpdatePost`, post)
+      .pipe(tap(() => (this.useCache = false)));
   }
 
   managePostFeatured(id: string): Observable<Post> {
@@ -96,18 +94,25 @@ export class PostService {
   }
 
   getFeaturedPosts(): Observable<Post[]> {
-      if (this.useCache && this.posts.length > 0) {
-        return of(this.posts).pipe(map((posts) => posts.filter((post) => post.isFeatured)));
-      }
+    if (this.useCache && this.posts.length > 0) {
+      return of(this.posts).pipe(
+        map((posts) => posts.filter((post) => post.isFeatured))
+      );
+    }
 
-    return this.http.get<Post[]>(`${cmsEnv.baseUrl}/Post/GetFeaturedPosts`)
-    .pipe(delay(2000));
+    return this.http.get<Post[]>(`${cmsEnv.baseUrl}/Post/GetFeaturedPosts`);
   }
 
   getPostsByCategory<T>(id: T): Observable<Post[]> {
-    return this.http.get<Post[]>(
-      `${cmsEnv.baseUrl}/Post/GetPostsByCategory/${id}`
-    );
+    if (this.postsByCategory.length > 0) {
+      if (this.postsByCategory[0].category.catID === id) {
+        return of(this.postsByCategory);
+      }
+    }
+
+    return this.http
+      .get<Post[]>(`${cmsEnv.baseUrl}/Post/GetPostsByCategory/${id}`)
+      .pipe(map((posts) => (this.postsByCategory = posts)));
   }
 
   geAllPostImages(): Observable<PostImage[]> {

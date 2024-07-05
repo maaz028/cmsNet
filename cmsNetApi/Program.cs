@@ -38,7 +38,7 @@ app.MapControllerRoute(
   );
 
 
-  using var scope = app.Services.CreateScope();
+using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 
 await Seed.SeedDataAsync(services.GetRequiredService<AppDBContext>());

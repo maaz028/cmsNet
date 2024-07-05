@@ -12,22 +12,22 @@ import { PostService } from 'src/app/services/post.service';
 })
 export class PostImagesComponent implements OnInit{
   constructor (
-    private _post: PostService,
-    private _toastr: ToastrService,
-    private _spinner: NgxSpinnerService
+    private post: PostService,
+    private toastr: ToastrService,
+    private spinner: NgxSpinnerService
   ){}
 
   postImages$ !: Observable<PostImage[]>;
   page: number = 1;
   tableSize: number = 10;
-  serverUrl: string = this._post.serverImageUrl;
+  serverUrl: string = this.post.serverImageUrl;
 
   onTableDataChange(event: any) {
     this.page = event;
   }
 
   getAllPostImages() {
-    this.postImages$ = this._post.geAllPostImages();
+    this.postImages$ = this.post.geAllPostImages();
   }
 
   ngOnInit(): void {
@@ -36,12 +36,11 @@ export class PostImagesComponent implements OnInit{
 
   async deleteImage(id: string) {
     if (confirm('Are You sure you want to delete?')){
-      const model$ =  this._post.deletePostImage(id);
+      const model$ =  this.post.deletePostImage(id);
 
-      this._spinner.show();
       await lastValueFrom(model$).then((res)=>{
         if (res) {
-          this._toastr.success(
+          this.toastr.success(
             `Post Image having ID: ${res.id} is deleted successfully!`
           );
         } else {
@@ -49,7 +48,6 @@ export class PostImagesComponent implements OnInit{
         }
       })
       .catch((err)=> console.error(err))
-      this._spinner.hide();
 
       this.getAllPostImages();
     }

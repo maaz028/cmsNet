@@ -14,10 +14,10 @@ import { PostService } from 'src/app/services/post.service';
 export class PostsComponent implements OnInit{
 
   constructor (
-    private _post: PostService,
+    private post: PostService,
   ) {}
 
-  serverImageUrl = this._post.serverImageUrl;
+  serverImageUrl = this.post.serverImageUrl;
 
   page: number = 1;
   tableSize: number = 3;
@@ -28,8 +28,8 @@ export class PostsComponent implements OnInit{
   }
 
    ngOnInit(){
-    const featuredPosts$ = this._post.getFeaturedPosts();
-    const   posts$ = this._post.allPosts();
+    const featuredPosts$ = this.post.getFeaturedPosts();
+    const   posts$ = this.post.allPosts();
 
     this.postsData$ = combineLatest([posts$, featuredPosts$]).pipe(
       map(([posts, featuredPosts])=> {

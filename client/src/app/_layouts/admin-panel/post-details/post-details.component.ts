@@ -9,13 +9,13 @@ import { PostService } from 'src/app/services/post.service';
 })
 export class PostDetailsComponent {
   constructor(
-    private _activatedRoute: ActivatedRoute,
-    private _post: PostService,
+    private activatedRoute: ActivatedRoute,
+    private post: PostService,
 
   ) {}
 
-  idParam = this._activatedRoute.snapshot.paramMap.get("id");
-  postDetails$ = this._post.singlePost(this.idParam ? this.idParam : '');
-  postImageUrl = this._post.serverImageUrl;
+  idParam = this.activatedRoute.snapshot.paramMap.get("id");
+  postDetails$ = this.post.singlePost(this.idParam ? this.idParam : '');
+  postImageUrl = this.post.serverImageUrl;
 
 }
