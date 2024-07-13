@@ -44,9 +44,7 @@ export class AllPostsComponent implements OnInit {
             this.toastr.success(
               `Post having ID: ${res.id} is deleted successfully!`
             );
-          },
-          error: () => this.toastr.error('Internal Server Error ocurred.'),
-        });
+          }});
       }
     });
 

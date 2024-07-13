@@ -25,7 +25,7 @@ export class CategoryService {
     }
 
     return this.http
-      .get<Category[]>(`${cmsEnv.baseUrl}/Category/GetCategories`)
+      .get<Category[]>(`${cmsEnv.baseUrl}/Category/Categories`)
       .pipe(
         map((categories) => {
           return this.categories = categories;
@@ -35,7 +35,7 @@ export class CategoryService {
 
   addCategory(category: object): Observable<Category> {
     return this.http
-      .post<Category>(`${cmsEnv.baseUrl}/Category/CreateCategory`, category)
+      .post<Category>(`${cmsEnv.baseUrl}/Category`, category)
       .pipe(tap(() => {
         this.useCache = false;
         this.refreshRequired$.next()
@@ -44,7 +44,7 @@ export class CategoryService {
 
   deleteCategory(id: string): Observable<Category> {
     return this.http
-      .delete<Category>(`${cmsEnv.baseUrl}/Category/DeleteCategory?id=${id}`)
+      .delete<Category>(`${cmsEnv.baseUrl}/Category/${id}`)
       .pipe(tap(() => {
         this.useCache = false;
         this.refreshRequired$.next()
@@ -53,7 +53,7 @@ export class CategoryService {
 
   updateCategory(category: Category): Observable<Category> {
     return this.http
-      .patch<Category>(`${cmsEnv.baseUrl}/Category/UpdateCategory`, category)
+      .patch<Category>(`${cmsEnv.baseUrl}/Category`, category)
       .pipe(tap(() => {
         this.useCache = false;
         this.refreshRequired$.next()
@@ -61,6 +61,6 @@ export class CategoryService {
   }
 
   categoryDetails(id: string): Observable<Category> {
-    return this.http.get<Category>(`${cmsEnv.baseUrl}/Category//api/Category/GetSingleCategory/${id}`);
+    return this.http.get<Category>(`${cmsEnv.baseUrl}/Category/${id}`);
   }
 }

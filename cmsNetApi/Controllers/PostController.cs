@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace cmsNetApi.Controllers
 {
-  [Route("api/[controller]/[action]")]
+  [Route("api/[controller]")]
   [ApiController]
   [Authorize]
   public class PostController : Controller
@@ -25,6 +25,7 @@ namespace cmsNetApi.Controllers
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("Posts")]
     public ActionResult<IEnumerable<PostModel>> GetAllPosts()
     {
         IEnumerable<PostModel> posts = post.GetAllPosts();
@@ -32,7 +33,7 @@ namespace cmsNetApi.Controllers
         if (posts.Any())
           return Ok(posts);
 
-        return Ok(Json(new { message = $"No Post available at the moments" }));
+        return Ok(new { message = $"No Post available at the moments" });
     }
 
     private async Task AddToDB(PostImageModel model)
@@ -43,6 +44,7 @@ namespace cmsNetApi.Controllers
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("Post-Images")]
     public ActionResult<IEnumerable<PostImageModel>> AllPostImages()
     {
         IEnumerable<PostImageModel> postImages = context.PostImage.ToList();
@@ -50,19 +52,20 @@ namespace cmsNetApi.Controllers
         if (postImages.Any())
           return Ok(postImages);
 
-        return Ok(Json(new
+        return Ok(new
         {
           message = "No Images available"
-        }));
+        });
     }
 
     [HttpDelete]
     [AllowAnonymous]
+    [Route("Delete-Post-Image")]
     public async Task<ActionResult<PostImageModel>> DeletePostImageAsync(string id)
     {
       PostImageModel? postImage = await context.PostImage.FindAsync(id);
 
-      if (postImage != null)
+      if (postImage is {})
       {
         context.Remove(postImage);
         await context.SaveChangesAsync();
@@ -72,17 +75,18 @@ namespace cmsNetApi.Controllers
         return Ok(postImage);
       }
 
-      return Ok(Json(new
+      return Ok(new
       {
         message = $"No Image having ID: {id}"
-      }));
+      });
     }
 
     [HttpPost]
     [Consumes("multipart/form-data")]
+    [Route("Upload-Post-Image")]
     public async Task<ActionResult<PostImageModel>?> UploadPostImage([FromForm] PostImageModel model)
     {
-        if (model != null)
+        if (model is {})
         {
           string uploadFolder = Path.Combine("wwwroot", "images/post-images");
           string uniqueFilename = Guid.NewGuid() + " " + model.Name;
@@ -101,7 +105,7 @@ namespace cmsNetApi.Controllers
     [HttpPost]
     public async Task<ActionResult<PostModel>?> AddPost([FromBody] PostBodyModel model)
     {
-        if (model != null)
+        if (model is {})
         {
           PostModel postModel = new()
           {
@@ -123,31 +127,31 @@ namespace cmsNetApi.Controllers
     }
 
 
-    [HttpDelete]
-    public async Task<ActionResult<PostModel>> DeletePost([FromQuery] string id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<PostModel>> DeletePost([FromRoute] string id)
     {
       PostModel? model = await post.DeletePostAsync(id);
 
-      if (model != null)
+      if (model is {})
       {
         return Ok(model);
       }
 
-      return Ok(Json(new { message = $"No Post having ID: {id}" }));
+      return Ok(new { message = $"No Post having ID: {id}" });
     }
 
-    [HttpGet]
+    [HttpGet("{id}")]
     [AllowAnonymous]
-    public async Task<ActionResult<PostModel>> GetPost([FromQuery] string id)
+    public async Task<ActionResult<PostModel>> GetPost([FromRoute] string id)
     {
       PostModel? model = await post.GetSinglePostAsync(id);
 
-      if (model != null)
+      if (model is {})
       {
         return Ok(model);
       }
 
-      return Ok(Json(new { message = $"No Post having ID: {id}" }));
+      return Ok(new { message = $"No Post having ID: {id}" });
     }
 
     [HttpPatch]
@@ -167,21 +171,21 @@ namespace cmsNetApi.Controllers
 
       PostModel? result = await post.UpdatePostAsync(postModel);
 
-      if (result != null)
+      if (result is {})
       {
         return Ok(postModel);
       }
 
-      return Ok(Json(new { message = $"No Post having ID: {model.Id}" }));
+      return Ok(new { message = $"No Post having ID: {model.Id}" });
 
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("Toggle-Feature-Post/{id}")]
     public async Task<ActionResult<PostModel>> ManagePostFeaturedAsync([FromRoute] string id)
     {
       PostModel? model = await post.ManagePostFeaturedAsync(id);
 
-      if (model != null)
+      if (model is {})
       {
         return Ok(model);
       }
@@ -191,11 +195,12 @@ namespace cmsNetApi.Controllers
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("Featured-Posts")]
     public async Task<ActionResult<IEnumerable<PostModel>>> GetFeaturedPostsAsync()
     {
       IEnumerable<PostModel>? posts = await post.GetFeaturedPostsAsync();
 
-      if (post != null)
+      if (post is {})
       {
         return Ok(posts);
       }
@@ -203,13 +208,13 @@ namespace cmsNetApi.Controllers
       return Ok(new { Message = $"No Featureds Posts available" });
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("Categorise-Posts/{id}")]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<PostModel>>> GetPostsByCategoryAsync([FromRoute] string id )
     {
       IEnumerable<PostModel>? posts = await post.GetPostsByCategoryIdAsync(id);
 
-      if (post != null)
+      if (post is {})
       {
         return Ok(posts);
       }

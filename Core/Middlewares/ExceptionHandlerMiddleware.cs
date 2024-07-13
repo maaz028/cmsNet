@@ -27,10 +27,10 @@ namespace Core.Middlewares
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 await context.Response.WriteAsJsonAsync(new {
                     Exceptions = new {
-                    StackTrace = exception.StackTrace,
-                    Message = exception.Message,
+                        exception.StackTrace,
+                        exception.Message,
                     InnerException = exception.InnerException.Data,
-                    Data = exception.Data
+                        exception.Data
                 }
                 });
             }

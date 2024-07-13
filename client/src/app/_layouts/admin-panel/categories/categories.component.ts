@@ -116,7 +116,6 @@ export class CategoriesComponent implements OnInit, OnDestroy {
                   this.toastr.success(
                     `Data having ID: ${id} deleted Successfully!`
                   );
-
                 },
                 error: () => {
                   this.toastr.error('Internal Server Error ocurred.');
@@ -161,7 +160,6 @@ export class CategoriesComponent implements OnInit, OnDestroy {
         }
       })
       .catch(() => this.toastr.error('Internal Server Error...'));
-
   }
 
   ngOnDestroy(): void {

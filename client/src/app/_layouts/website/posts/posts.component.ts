@@ -7,35 +7,29 @@ import { PostService } from 'src/app/services/post.service';
   selector: 'app-posts',
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
-
-export class PostsComponent implements OnInit{
-
-  constructor (
-    private post: PostService,
-  ) {}
+export class PostsComponent implements OnInit {
+  constructor(private post: PostService) {}
 
   serverImageUrl = this.post.serverImageUrl;
 
   page: number = 1;
   tableSize: number = 3;
 
-  postsData$ !: Observable<PostsData>
+  postsData$!: Observable<PostsData>;
   onTableDataChange(event: any) {
     this.page = event;
   }
 
-   ngOnInit(){
+  ngOnInit() {
     const featuredPosts$ = this.post.getFeaturedPosts();
-    const   posts$ = this.post.allPosts();
+    const posts$ = this.post.allPosts();
 
     this.postsData$ = combineLatest([posts$, featuredPosts$]).pipe(
-      map(([posts, featuredPosts])=> {
-        return  {posts, featuredPosts}
+      map(([posts, featuredPosts]) => {
+        return { posts, featuredPosts };
       })
-    )
-
+    );
   }
 }

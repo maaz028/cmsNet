@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace cmsNetApi.Controllers
 {
-  [Route("api/[controller]/[action]")]
+  [Route("api/[controller]")]
   [ApiController]
   [Authorize]
   public class CategoryController : Controller
@@ -23,6 +23,7 @@ namespace cmsNetApi.Controllers
 
     [HttpGet]
     [AllowAnonymous]
+    [Route("Categories")]
     public ActionResult<IEnumerable<CategoryModel>> GetCategories()
     {
       IEnumerable<CategoryModel> categories = category.GetAllCategories();
@@ -38,12 +39,11 @@ namespace cmsNetApi.Controllers
     }
 
     [HttpPost]
-    [AllowAnonymous]
     public async Task<ActionResult<CategoryModel>> CreateCategory([FromBody] CategoryBodyModel model)
     {
       CategoryModel isCategoryAvailable = await IsCategoryAvailable(model.Name.ToLower().Trim());
 
-      if (isCategoryAvailable != null)
+      if (isCategoryAvailable is {})
       {
         return Ok(new { available = true });
       }
@@ -54,18 +54,18 @@ namespace cmsNetApi.Controllers
         UpdatedDate = DateTime.Now
       });
 
-      if (result == null)
+      if (result is not {})
         return BadRequest(Json(new { msg = "server error" }));
 
       return CreatedAtAction("CreateCategory", result);
     }
 
-    [HttpDelete]
-    public async Task<ActionResult<CategoryModel>> DeleteCategory([FromQuery] string id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<CategoryModel>> DeleteCategory([FromRoute] string id)
     {
       CategoryModel? result = await category.DeleteCategoryAsync(id);
 
-      if (result == null)
+      if (result is not {})
         return BadRequest(Json(new { msg = $"No Category found having ID: {id}" }));
 
       return Ok(result);
@@ -76,7 +76,7 @@ namespace cmsNetApi.Controllers
     {
       CategoryModel isCategoryAvailable = await IsCategoryAvailable(model.Name.ToLower().Trim());
 
-      if (isCategoryAvailable != null)
+      if (isCategoryAvailable is {})
       {
         return Ok(new { available = true });
       }
@@ -88,7 +88,7 @@ namespace cmsNetApi.Controllers
         UpdatedDate = DateTime.Now
       });
 
-      if (result == null)
+      if (result is not {})
       {
         return BadRequest(new
         {
@@ -100,11 +100,12 @@ namespace cmsNetApi.Controllers
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<CategoryModel?>> GetSingleCategoryAsync(string id)
     {
       CategoryModel? model = await category.GetSingleCategory(id);
 
-      if (model != null)
+      if (model is {})
       {
         return Ok(new
         {

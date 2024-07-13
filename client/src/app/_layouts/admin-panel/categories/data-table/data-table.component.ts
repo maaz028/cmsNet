@@ -11,7 +11,7 @@ import { CategoryService } from 'src/app/services/category.service';
 })
 export class DataTableComponent implements OnInit {
 
-  @Input() categories!: Category[];
+  @Input() categories!: Category[] | undefined;
   @Output() populateCategoryEvent = new EventEmitter<string>();
   @Output() deleteCategoryEvent = new EventEmitter<string>();
   @Output() callCategoriesEvent = new EventEmitter()
@@ -25,6 +25,7 @@ export class DataTableComponent implements OnInit {
   ngOnInit() {
     this.category.refreshRequired$
       .subscribe(() => {
+        this.categories = undefined
         this.callCategoriesEvent.emit(null);
       })
   }

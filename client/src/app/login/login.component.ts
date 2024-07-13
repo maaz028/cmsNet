@@ -39,8 +39,6 @@ export class LoginComponent implements OnInit {
       password: form.value.password,
     };
 
-    this._spinner.show();
-
     this._auth.authenticateLogin(data).subscribe({
       next: (res) => {
      if (res?.invalidCredentials) {
@@ -50,13 +48,7 @@ export class LoginComponent implements OnInit {
           this._auth.saveToken(res.token);
           this._router.navigate(['/dashboard']);
         }
-
-        this._spinner.hide();
-      },
-      error: () => {
-        this._toastr.error('Internal Server Error...');
-        this._spinner.hide();
-      },
+      }
     });
   }
 }

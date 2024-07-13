@@ -25,14 +25,14 @@ export class PostService {
 
   uploadPostImage(imageData: FormData): Observable<PhotoImage> {
     return this.http.post<PhotoImage>(
-      `${cmsEnv.baseUrl}/Post/UploadPostImage`,
+      `${cmsEnv.baseUrl}/Post/Upload-Post-Image`,
       imageData
     );
   }
 
   addPost(postData: Post): Observable<Post> {
     return this.http
-      .post<Post>(`${cmsEnv.baseUrl}/Post/AddPost`, postData)
+      .post<Post>(`${cmsEnv.baseUrl}/Post`, postData)
       .pipe(tap(() => (this.useCache = false)));
   }
 
@@ -45,16 +45,14 @@ export class PostService {
     }
 
     return this.http
-      .get<Post[]>(`${cmsEnv.baseUrl}/Post/GetAllPosts`)
-      .pipe(map((posts) => (this.posts = posts)))
-      .pipe(tap(() => (this.useCache = true)));
+      .get<Post[]>(`${cmsEnv.baseUrl}/Post/Posts`)
+      .pipe(map((posts) => (this.posts = posts))
+      ,tap(() => (this.useCache = true)));
   }
 
   deletePost(id: string): Observable<Post> {
     return this.http
-      .delete<Post>(`${cmsEnv.baseUrl}/Post/DeletePost`, {
-        params: new HttpParams().set('id', id),
-      })
+      .delete<Post>(`${cmsEnv.baseUrl}/Post/${id}`)
       .pipe(
         tap(() => {
           this.useCache = false;
@@ -71,20 +69,20 @@ export class PostService {
       return of(post);
     }
 
-    return this.http.get<Post>(`${cmsEnv.baseUrl}/Post/GetPost`, {
+    return this.http.get<Post>(`${cmsEnv.baseUrl}/Post`, {
       params: new HttpParams().set('id', id),
     });
   }
 
   updatePost(post: Post): Observable<Post> {
     return this.http
-      .patch<Post>(`${cmsEnv.baseUrl}/Post/UpdatePost`, post)
+      .patch<Post>(`${cmsEnv.baseUrl}/Post`, post)
       .pipe(tap(() => (this.useCache = false)));
   }
 
   managePostFeatured(id: string): Observable<Post> {
     return this.http
-      .get<Post>(`${cmsEnv.baseUrl}/Post/ManagePostFeatured/${id}`)
+      .get<Post>(`${cmsEnv.baseUrl}/Post/Toggle-Feature-Post/${id}`)
       .pipe(
         tap(() => {
           this.useCache = false;
@@ -100,7 +98,7 @@ export class PostService {
       );
     }
 
-    return this.http.get<Post[]>(`${cmsEnv.baseUrl}/Post/GetFeaturedPosts`);
+    return this.http.get<Post[]>(`${cmsEnv.baseUrl}/Post/Featured-Posts`);
   }
 
   getPostsByCategory<T>(id: T): Observable<Post[]> {
@@ -111,17 +109,17 @@ export class PostService {
     }
 
     return this.http
-      .get<Post[]>(`${cmsEnv.baseUrl}/Post/GetPostsByCategory/${id}`)
+      .get<Post[]>(`${cmsEnv.baseUrl}/Post/Categorise-Posts/${id}`)
       .pipe(map((posts) => (this.postsByCategory = posts)));
   }
 
   geAllPostImages(): Observable<PostImage[]> {
-    return this.http.get<PostImage[]>(`${cmsEnv.baseUrl}/Post/AllPostImages`);
+    return this.http.get<PostImage[]>(`${cmsEnv.baseUrl}/Post/Post-Images`);
   }
 
   deletePostImage(id: string): Observable<PostImage> {
     return this.http
-      .delete<PostImage>(`${cmsEnv.baseUrl}/Post/DeletePostImage`, {
+      .delete<PostImage>(`${cmsEnv.baseUrl}/Post/Delete-Post-Image`, {
         params: new HttpParams().set('id', id),
       })
       .pipe(tap(() => this.refreshRequired$.next()));

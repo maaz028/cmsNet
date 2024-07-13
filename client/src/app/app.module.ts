@@ -16,8 +16,8 @@ import { LoginComponent } from './login/login.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { SharedModule } from './shared.module';
 import { TokenInterceptor } from './interceptors/token.interceptor';
-import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -33,7 +33,10 @@ import { LoadingInterceptor } from './interceptors/loading.interceptor';
     LoadingBarModule,
     LoadingBarHttpClientModule,
     LoadingBarRouterModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      positionClass: "toast-bottom-right",
+      preventDuplicates: true
+    }),
     BrowserAnimationsModule,
     HttpClientModule,
     NgxSpinnerModule,
@@ -51,6 +54,12 @@ import { LoadingInterceptor } from './interceptors/loading.interceptor';
       useClass: LoadingInterceptor,
       multi: true,
     },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true,
+    },
+
   ],
   bootstrap: [AppComponent],
 })
