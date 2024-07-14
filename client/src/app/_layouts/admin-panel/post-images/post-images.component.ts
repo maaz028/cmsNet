@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Observable, lastValueFrom } from 'rxjs';
 import { PostImage } from 'src/app/models/post-image.model';
@@ -14,7 +13,6 @@ export class PostImagesComponent implements OnInit{
   constructor (
     private post: PostService,
     private toastr: ToastrService,
-    private spinner: NgxSpinnerService
   ){}
 
   postImages$ !: Observable<PostImage[]>;
@@ -47,7 +45,6 @@ export class PostImagesComponent implements OnInit{
           console.error("Internal server error ocurred.")
         }
       })
-      .catch((err)=> console.error(err))
 
       this.getAllPostImages();
     }

@@ -91,7 +91,6 @@ export class NewPostComponent implements OnInit {
       await this.getPostDetailsAsync();
       this.populatePost(this.postDetails);
     }
-
   }
 
   private populatePost(post: Post): void {
@@ -111,11 +110,9 @@ export class NewPostComponent implements OnInit {
   private async getPostDetailsAsync(): Promise<void> {
     const postDetails$ = this.post.singlePost(this.postId);
 
-    await lastValueFrom(postDetails$)
-      .then((res) => {
-        this.postDetails = res;
-      })
-      .catch(() => console.error('Internal Server Error...'));
+    await lastValueFrom(postDetails$).then((res) => {
+      this.postDetails = res;
+    });
   }
 
   get fc() {
@@ -141,7 +138,6 @@ export class NewPostComponent implements OnInit {
 
       reader.readAsDataURL(event.target.files[0]);
     } catch (err: any) {
-      console.error(err);
       this.imgSrc = '';
     }
   }
@@ -164,8 +160,6 @@ export class NewPostComponent implements OnInit {
           this.isPhotoUploaded = true;
           this.uploadButtonText = 'Uploaded';
         })
-        .catch(() => this.toastr.error('Internal Server Error...'));
-
     } else this.toastr.warning('Select Image !...');
   }
 
@@ -218,6 +212,5 @@ export class NewPostComponent implements OnInit {
         })
         .catch(() => this.toastr.error('Internal Server Error...'));
     }
-
   }
 }

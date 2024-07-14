@@ -38,9 +38,6 @@ export class ProfileComponent implements OnInit {
             this.router.navigateByUrl('/login');
           }
         })
-        .catch(() => {
-          console.error('Server error ocurred.');
-        });
     } else {
       this.toastr.warning('New email cannot be current email');
     }
@@ -64,9 +61,6 @@ export class ProfileComponent implements OnInit {
             this.toastr.error('Current Passwored is invalid.');
           }
         })
-        .catch(() => {
-          console.error('Server error ocurred.');
-        });
       form.reset();
     } else {
       this.toastr.error('Password do not match.');

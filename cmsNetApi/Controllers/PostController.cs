@@ -3,6 +3,7 @@ using Infrastructure.Repositories;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace cmsNetApi.Controllers
 {
@@ -28,12 +29,12 @@ namespace cmsNetApi.Controllers
     [Route("Posts")]
     public ActionResult<IEnumerable<PostModel>> GetAllPosts()
     {
-        IEnumerable<PostModel> posts = post.GetAllPosts();
+      IEnumerable<PostModel> posts = post.GetAllPosts();
 
-        if (posts.Any())
-          return Ok(posts);
+      if (posts.Any())
+        return Ok(posts);
 
-        return Ok(new { message = $"No Post available at the moments" });
+      return Ok(new ApiExceptionResponse(404));
     }
 
     private async Task AddToDB(PostImageModel model)
@@ -45,116 +46,124 @@ namespace cmsNetApi.Controllers
     [HttpGet]
     [AllowAnonymous]
     [Route("Post-Images")]
-    public ActionResult<IEnumerable<PostImageModel>> AllPostImages()
+    [ProducesResponseType(typeof(PostImageModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<PostImageModel>>> AllPostImages()
     {
-        IEnumerable<PostImageModel> postImages = context.PostImage.ToList();
+      IEnumerable<PostImageModel> postImages = await context.PostImage.ToListAsync();
 
-        if (postImages.Any())
-          return Ok(postImages);
+      if (postImages.Any())
+        return Ok(postImages);
 
-        return Ok(new
-        {
-          message = "No Images available"
-        });
+      return Ok(new ApiExceptionResponse(404));
     }
 
     [HttpDelete]
     [AllowAnonymous]
     [Route("Delete-Post-Image")]
+    [ProducesResponseType(typeof(PostImageModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<PostImageModel>> DeletePostImageAsync(string id)
     {
       PostImageModel? postImage = await context.PostImage.FindAsync(id);
 
-      if (postImage is {})
+      if (postImage is not null)
       {
         context.Remove(postImage);
         await context.SaveChangesAsync();
         System.IO.File.Delete(
-          Path.Combine(iHosting.WebRootPath,$"images/post-images/{postImage.Name}")
+          Path.Combine(iHosting.WebRootPath, $"images/post-images/{postImage.Name}")
         );
         return Ok(postImage);
       }
 
-      return Ok(new
-      {
-        message = $"No Image having ID: {id}"
-      });
+      return Ok(new ApiExceptionResponse(404));
     }
 
     [HttpPost]
     [Consumes("multipart/form-data")]
     [Route("Upload-Post-Image")]
+    [ProducesResponseType(typeof(PostImageModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<PostImageModel>?> UploadPostImage([FromForm] PostImageModel model)
     {
-        if (model is {})
-        {
-          string uploadFolder = Path.Combine("wwwroot", "images/post-images");
-          string uniqueFilename = Guid.NewGuid() + " " + model.Name;
-          string filepath = Path.Combine(uploadFolder, uniqueFilename);
-          model.Photo.CopyTo(new FileStream(filepath, FileMode.Create));
-          model.PhotoPath = "images/post-images/" + uniqueFilename;
-          model.Name = uniqueFilename;
-          await AddToDB(model);
-          
-          return model;
-        }
+      if (model is not null)
+      {
+        string uploadFolder = Path.Combine("wwwroot", "images/post-images");
+        string uniqueFilename = Guid.NewGuid() + " " + model.Name;
+        string filepath = Path.Combine(uploadFolder, uniqueFilename);
+        model.Photo.CopyTo(new FileStream(filepath, FileMode.Create));
+        model.PhotoPath = "images/post-images/" + uniqueFilename;
+        model.Name = uniqueFilename;
+        await AddToDB(model);
 
-        return null;
+        return model;
+      }
+
+      return BadRequest(new ApiExceptionResponse(500));
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(PostModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<PostModel>?> AddPost([FromBody] PostBodyModel model)
     {
-        if (model is {})
+      if (model is not null)
+      {
+        PostModel postModel = new()
         {
-          PostModel postModel = new()
-          {
-            Title = model.Title,
-            Permalink = model.Permalink,
-            Category = model.Category,
-            PostImgPath = model.PostImgPath,
-            Excerpt = model.Excerpt,
-            Content = model.Content,
-            UpdatedAt = DateTime.Now
+          Title = model.Title,
+          Permalink = model.Permalink,
+          Category = model.Category,
+          PostImgPath = model.PostImgPath,
+          Excerpt = model.Excerpt,
+          Content = model.Content,
+          UpdatedAt = DateTime.Now
 
-          };
+        };
 
-          await post.AddPostAsync(postModel);
-          return Ok(postModel);
-        }
+        await post.AddPostAsync(postModel);
+        return Ok(postModel);
+      }
 
-        return null;
+      return BadRequest(new ApiExceptionResponse(500));
     }
 
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(typeof(PostModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PostModel>> DeletePost([FromRoute] string id)
     {
       PostModel? model = await post.DeletePostAsync(id);
 
-      if (model is {})
+      if (model is { })
       {
         return Ok(model);
       }
 
-      return Ok(new { message = $"No Post having ID: {id}" });
+      return NotFound(new ApiExceptionResponse(404));
     }
 
     [HttpGet("{id}")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(PostModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PostModel>> GetPost([FromRoute] string id)
     {
       PostModel? model = await post.GetSinglePostAsync(id);
 
-      if (model is {})
+      if (model is not null)
       {
         return Ok(model);
       }
 
-      return Ok(new { message = $"No Post having ID: {id}" });
+      return NotFound(new ApiExceptionResponse(404));
     }
 
     [HttpPatch]
+    [ProducesResponseType(typeof(PostModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PostModel>> UpdatePost([FromBody] PostBodyModel model)
     {
       PostModel postModel = new()
@@ -171,55 +180,60 @@ namespace cmsNetApi.Controllers
 
       PostModel? result = await post.UpdatePostAsync(postModel);
 
-      if (result is {})
+      if (result is not null)
       {
         return Ok(postModel);
       }
 
-      return Ok(new { message = $"No Post having ID: {model.Id}" });
-
+      return NotFound(new ApiExceptionResponse(404));
     }
 
     [HttpGet("Toggle-Feature-Post/{id}")]
+    [ProducesResponseType(typeof(PostModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PostModel>> ManagePostFeaturedAsync([FromRoute] string id)
     {
       PostModel? model = await post.ManagePostFeaturedAsync(id);
 
-      if (model is {})
+      if (model is not null)
       {
         return Ok(model);
       }
 
-      return Ok(new { Message = $"No Post having ID: {id}" });
+      return NotFound(new ApiExceptionResponse(404));
     }
 
     [HttpGet]
     [AllowAnonymous]
     [Route("Featured-Posts")]
+    [ProducesResponseType(typeof(PostModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<PostModel>>> GetFeaturedPostsAsync()
     {
       IEnumerable<PostModel>? posts = await post.GetFeaturedPostsAsync();
 
-      if (post is {})
+      if (post is not null)
       {
         return Ok(posts);
       }
 
-      return Ok(new { Message = $"No Featureds Posts available" });
+      return Ok(new ApiExceptionResponse(404));
     }
 
     [HttpGet("Categorise-Posts/{id}")]
     [AllowAnonymous]
-    public async Task<ActionResult<IEnumerable<PostModel>>> GetPostsByCategoryAsync([FromRoute] string id )
+    [ProducesResponseType(typeof(PostModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<PostModel>>> GetPostsByCategoryAsync([FromRoute] string id)
     {
       IEnumerable<PostModel>? posts = await post.GetPostsByCategoryIdAsync(id);
 
-      if (post is {})
+      if (post is not null)
       {
         return Ok(posts);
       }
 
-      return Ok(new { Message = $"No Post having ID: {id}" });
+      return NotFound(new ApiExceptionResponse(404));
     }
 
 

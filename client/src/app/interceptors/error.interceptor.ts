@@ -5,8 +5,9 @@ import {
   HttpEvent,
   HttpInterceptor,
   HttpErrorResponse,
+  HttpResponse,
 } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
@@ -23,7 +24,11 @@ export class ErrorInterceptor implements HttpInterceptor {
         if (err instanceof HttpErrorResponse) {
           if (err.status === 401) {
             this.toastr.error(err.message, err.status.toString());
-          } else if (err.status === 500) {
+          }
+          else if (err.status === 404) {
+            this.toastr.error('Resource not found',err.status.toString());
+          }
+           else if (err.status === 500) {
             err.error.exceptions.fromComponent = this.router.url;
             this.router.navigateByUrl('/exceptions', {
               state: err.error.exceptions,

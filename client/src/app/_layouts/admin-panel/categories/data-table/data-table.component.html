@@ -18,7 +18,7 @@
               }; let i = index; trackBy: refereshCategories">
               <th scope="row"> {{ i + 1}}</th>
               <td>{{category.id}}</td>
-              <td>{{category.name | titlecase}}</td>
+              <td>{{category.name| titlecase}}</td>
               <td>
                 <button class="btn" (click)="populateCategoryEventEmitter(category.id)" data-bs-toggle="modal" data-bs-target="#updateCategoryModal"><i class="fa-solid fa-pen-to-square" style="color: #ffe100;"></i></button>
                 <button class="btn" (click)="deleteCategoryEventEmitter(category.id)"><i class="fa-solid fa-trash-can" style="color: #ff0000;"></i></button>

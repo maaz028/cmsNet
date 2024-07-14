@@ -19,19 +19,19 @@ namespace cmsNetApi.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(AccountModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AccountModel>> GetAccountDetailsAsync([FromRoute] string id)
         {
             AccountModel accountDetails = await account.AccountDetailsAsync(id);
 
-            if (accountDetails != null)
+            if (accountDetails is not null)
             {
                 return accountDetails;
             }
 
-            return Ok(new
-            {
-                Message = $"No account found having ID: {id}"
-            });
+            return NotFound(new ApiExceptionResponse(404));
+
         }
 
         [HttpPost]
@@ -54,64 +54,63 @@ namespace cmsNetApi.Controllers
         }
 
         [HttpDelete]
+        [ProducesResponseType(typeof(CategoryModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AccountModel>> DeleteAcountAsync([FromQuery] string id)
         {
 
             AccountModel accountDetails = await account.DeleteAccountAsync(id);
 
-            if (accountDetails != null)
+            if (accountDetails is not null)
             {
                 return Ok(accountDetails);
             }
 
-            return Ok(new
-            {
-                Message = $"No account found having ID: {id}"
-            });
+            return NotFound(new ApiExceptionResponse(404));
+
         }
 
         [HttpPatch]
+        [ProducesResponseType(typeof(CategoryModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateEmail([FromBody] AccountBodyModel model)
         {
             AccountModel? accountDetails = await account.UpdateEmailAsync(model.ID, model.Email.Trim());
 
-            if (accountDetails != null)
+            if (accountDetails is not null)
             {
                 return Ok(accountDetails);
             }
 
-            return Ok(new
-            {
-                Message = $"No account found having ID: {model.ID}"
-            });
+            return NotFound(new ApiExceptionResponse(404));
         }
 
         [AllowAnonymous]
         [HttpPost]
+        [ProducesResponseType(typeof(CategoryModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult<AccountModel>> AuthenticateLoginAsync([FromBody] AccountBodyModel model)
         {
             AccountModel? accountDetails = await account.AuthenticateLoginAsync(model);
 
-            if (accountDetails != null)
+            if (accountDetails is not null)
             {
                 accountDetails.Token = jwtCreationService.CreateJwt("Admin", "Maaz");
 
                 return Ok(accountDetails);
             }
 
-            return Ok(new
-            {
-                invalidCredentials = true
-            });
+            return Ok(new ApiExceptionResponse(404));
         }
 
         [HttpPatch]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<bool>> UpdatePassword([FromBody] AccountBodyModel model)
         {
-
             bool? result = await account.UpdatePasswordAsync(model.ID, model.Password, model.NewPassword);
 
-            if (result != null)
+            if (result is not null)
             {
                 if ((bool)result)
                 {
@@ -128,10 +127,7 @@ namespace cmsNetApi.Controllers
 
             }
 
-            return Ok(new
-            {
-                Message = $"No account found having ID: {model.ID}"
-            });
+            return NotFound(new ApiExceptionResponse(404));
         }
     }
 

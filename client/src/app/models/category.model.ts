@@ -4,5 +4,4 @@ export interface Category {
   name: string,
   available?:boolean
 
-
 }

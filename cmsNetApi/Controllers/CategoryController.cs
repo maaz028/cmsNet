@@ -31,7 +31,7 @@ namespace cmsNetApi.Controllers
       if (categories.Any())
         return Ok(categories);
 
-      return Ok(new { msg = "No Categories available at the moment" });
+      return Ok(new ApiExceptionResponse(404));
     }
     private async Task<CategoryModel> IsCategoryAvailable(string name)
     {
@@ -39,13 +39,15 @@ namespace cmsNetApi.Controllers
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(CategoryModel), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CategoryModel>> CreateCategory([FromBody] CategoryBodyModel model)
     {
       CategoryModel isCategoryAvailable = await IsCategoryAvailable(model.Name.ToLower().Trim());
 
-      if (isCategoryAvailable is {})
+      if (isCategoryAvailable is not null)
       {
-        return Ok(new { available = true });
+        return Ok(new ApiExceptionResponse(409));
       }
 
       CategoryModel result = await category.AddCategoryAsync(new CategoryModel()
@@ -54,31 +56,36 @@ namespace cmsNetApi.Controllers
         UpdatedDate = DateTime.Now
       });
 
-      if (result is not {})
-        return BadRequest(Json(new { msg = "server error" }));
+      if (result is null)
+        return BadRequest(new ApiExceptionResponse(500));
 
       return CreatedAtAction("CreateCategory", result);
     }
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<CategoryModel>> DeleteCategory([FromRoute] string id)
     {
       CategoryModel? result = await category.DeleteCategoryAsync(id);
 
-      if (result is not {})
-        return BadRequest(Json(new { msg = $"No Category found having ID: {id}" }));
+      if (result is null)
+        return NotFound(new ApiExceptionResponse(404));
 
-      return Ok(result);
+      return Ok(new ApiExceptionResponse(204));
     }
 
     [HttpPatch]
+    [ProducesResponseType(typeof(CategoryModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CategoryModel>> UpdateCategory([FromBody] CategoryBodyModel model)
     {
       CategoryModel isCategoryAvailable = await IsCategoryAvailable(model.Name.ToLower().Trim());
 
-      if (isCategoryAvailable is {})
+      if (isCategoryAvailable is not null)
       {
-        return Ok(new { available = true });
+        return Ok(new ApiExceptionResponse(409));
       }
 
       CategoryModel? result = await category.UpdateCategoryAsync(new CategoryModel()
@@ -88,12 +95,9 @@ namespace cmsNetApi.Controllers
         UpdatedDate = DateTime.Now
       });
 
-      if (result is not {})
+      if (result is null)
       {
-        return BadRequest(new
-        {
-          msg = $"No Category found having ID: {model.ID}"
-        });
+        return NotFound(new ApiExceptionResponse(404));
       }
 
       return Ok(result);
@@ -101,19 +105,18 @@ namespace cmsNetApi.Controllers
 
     [HttpGet("{id}")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(CategoryModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiExceptionResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CategoryModel?>> GetSingleCategoryAsync(string id)
     {
       CategoryModel? model = await category.GetSingleCategory(id);
 
-      if (model is {})
+      if (model is null)
       {
-        return Ok(new
-        {
-          msg = $"No Category found having ID: {id}"
-        });
+        return NotFound(new ApiExceptionResponse(404));
       }
 
-      return model;
+      return Ok(model);
     }
   }
 }

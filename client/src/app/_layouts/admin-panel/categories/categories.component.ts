@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, NgForm, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { Subject, delay, lastValueFrom, map, takeUntil } from 'rxjs';
+import { Subject, lastValueFrom, map, takeUntil } from 'rxjs';
 import { Category } from 'src/app/models/category.model';
 import { CategoryService } from 'src/app/services/category.service';
 import { PostService } from 'src/app/services/post.service';
@@ -57,11 +57,10 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   async getCategoriesAsync() {
     const categories = this.category.getCategories();
 
-    await lastValueFrom(categories).then((res) => {
-      if (res.length > 0) {
-        this.categories = res;
-      } else {
-        this.categories = [];
+    await lastValueFrom(categories).then((res: any) => {
+      this.categories = res;
+      if (res?.['statusCode'] === 404) {
+        this.toastr.error(res?.['message'], res?.['statusCode']);
       }
     });
   }
@@ -71,15 +70,11 @@ export class CategoriesComponent implements OnInit, OnDestroy {
       name: form.value.category,
     });
 
-    await lastValueFrom(categoryAdded$)
-      .then((res) => {
-        if (res?.available) {
-          this.toastr.error('Category already available!');
-        } else this.toastr.success('Data inserted Successfully!');
-      })
-      .catch(() => {
-        console.error('Server error occurred.');
-      });
+    await lastValueFrom(categoryAdded$).then((res: any) => {
+      if (res?.['statusCode'] === 409) {
+        this.toastr.warning('Category already exists!');
+      } else this.toastr.success('Data inserted Successfully!');
+    });
 
     form.reset();
   }
@@ -112,13 +107,12 @@ export class CategoriesComponent implements OnInit, OnDestroy {
               .deleteCategory(id)
               .pipe(takeUntil(this.onDestroy))
               .subscribe({
-                next: async () => {
-                  this.toastr.success(
-                    `Data having ID: ${id} deleted Successfully!`
-                  );
-                },
-                error: () => {
-                  this.toastr.error('Internal Server Error ocurred.');
+                next: (res: any) => {
+                  if (res?.['statusCode'] === 204) {
+                    this.toastr.success(
+                      `Data having ID: ${id} deleted Successfully!`
+                    );
+                  }
                 },
               });
           }
@@ -147,19 +141,17 @@ export class CategoriesComponent implements OnInit, OnDestroy {
 
     const category$ = this.category.updateCategory(category);
 
-    await lastValueFrom(category$)
-      .then((res: any) => {
-        if (res?.available) {
-          this.toastr.error('Category already available!');
-        } else {
-          this.toastr.success(
-            `Category having ID: ${res.id} is updated Successfully!`
-          );
-          this.closeBtn.nativeElement?.click();
-          this.formGroup.reset();
-        }
-      })
-      .catch(() => this.toastr.error('Internal Server Error...'));
+    await lastValueFrom(category$).then((res: any) => {
+      if (res?.['statusCode'] === 409) {
+        this.toastr.error('Category already available!');
+      } else {
+        this.toastr.success(
+          `Category having ID: ${res.id} is updated Successfully!`
+        );
+      }
+      this.closeBtn.nativeElement?.click();
+      this.formGroup.reset();
+    });
   }
 
   ngOnDestroy(): void {

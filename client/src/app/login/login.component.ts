@@ -40,8 +40,8 @@ export class LoginComponent implements OnInit {
     };
 
     this._auth.authenticateLogin(data).subscribe({
-      next: (res) => {
-     if (res?.invalidCredentials) {
+      next: (res: any) => {
+     if (res?.['statusCode'] === 404) {
           this._toastr.error('Invalid username or password');
         } else {
           this._auth.saveAccountDetails(res);

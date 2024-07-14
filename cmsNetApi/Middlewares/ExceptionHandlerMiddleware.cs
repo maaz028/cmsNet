@@ -1,3 +1,5 @@
+using System.Net;
+using cmsNetApi;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -22,17 +24,14 @@ namespace Core.Middlewares
             }
             catch (Exception exception)
             {               
-                _logger.LogError(exception, "Exception ocurred {Message}", exception.Message);
+                _logger.LogError(exception, exception.Message);
 
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                await context.Response.WriteAsJsonAsync(new {
-                    Exceptions = new {
-                        exception.StackTrace,
-                        exception.Message,
-                    InnerException = exception.InnerException.Data,
-                        exception.Data
-                }
-                });
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                await context.Response.WriteAsJsonAsync(
+                    new ApiExceptionResponse((int)HttpStatusCode.InternalServerError, exception.Message, exception.StackTrace)
+                );
             }
         }
     }
